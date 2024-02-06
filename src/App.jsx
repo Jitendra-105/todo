@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -7,14 +7,25 @@ function App() {
   const [editIndex, setEditIndex] = useState(null);
   const [saveEditedTask, setSaveEditedTask] = useState("");
 
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("todoTasks");
+    if (storedTasks) {
+      setAddTask(JSON.parse(storedTasks));
+    }
+  }, []);
+
   const handleAddTask = () => {
-    setAddTask((prevTasks) => [...prevTasks, renderTask]);
+    const updatedTasks = [...addTask, renderTask];
+    setAddTask(updatedTasks);
     setRenderTask("");
+    localStorage.setItem("todoTasks", JSON.stringify(updatedTasks));
   };
+  
 
   const removeTask = (ind) => {
-    const updatedTask = addTask.filter((_, indexx) => indexx !== ind);
-    setAddTask(updatedTask);
+    const updatedTasks = addTask.filter((_, indexx) => indexx !== ind);
+    setAddTask(updatedTasks);
+    localStorage.setItem("todoTasks", JSON.stringify(updatedTasks));
   };
 
   const editTask = (index) => {
@@ -29,17 +40,19 @@ function App() {
       setAddTask(updatedTasks);
       setEditIndex(null);
       setSaveEditedTask("");
+      localStorage.setItem("todoTasks", JSON.stringify(updatedTasks));
     }
   };
   return (
     <>
-      <div className="input-container w-screen h-screen flex justify-center items-start shadow-lg bg-zinc-900">
-        <div className="todocontainer mt-[10rem] border border-slate-400 p-3 rounded-lg">
+      <div className="input-container w-[60%] mx-[auto] h-screen shadow-lg">
+        <div className="head text-white text-center mt-[3rem] font-medium">TODAY'S TODO LIST</div>
+        <div className="todocontainer mt-[3rem] border border-slate-400 p-3 rounded-lg flex justify-center items-center flex-col">
           <div className="input-container mb-[3rem] flex justify-center items-center">
             <input
               type="text"
               name="userinput"
-              className="border rounded-sm mr-6 w-[20vw] h-[5vh] outline-none p-4"
+              className="border rounded-sm mr-6 w-[23.1vw] h-[5vh] outline-none p-4"
               value={renderTask}
               onChange={(e) => setRenderTask(e.target.value)}
             />
